@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
-use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -46,6 +45,9 @@ class UserController extends AbstractController
         ]);
     }
 
+    /**
+     * Метод для получения пользователя по логину и паролю
+     */
     #[Route('/login', name: 'login', methods: ['POST'])]
     public function index(#[CurrentUser] ?User $user, JWTTokenManagerInterface $JWTManager): Response
     {
@@ -76,8 +78,11 @@ class UserController extends AbstractController
     #[Route('/get-random-int', name:'random_int', methods: ['GET'])]
     public function getRandomInt(): Response
     {
+        $user = $this->getUser();
+
         return $this->json([
-            'rnd' => rand(1,100)
+            'rnd' => rand(1,100),
+            'user' => $user->getUserIdentifier()
         ]);
     }
 }
