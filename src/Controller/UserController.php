@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -11,12 +12,17 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('api/user', name: 'api_user_')]
 class UserController extends AbstractController
 {
     #[Route('/registration', name: 'registration', methods: ['POST'])]
-    public function registration(UserRepository $userRepository, Request $request, UserPasswordHasherInterface $passwordHasher): Response
+    public function registration(
+        UserRepository $userRepository,
+        Request $request,
+        UserPasswordHasherInterface $passwordHasher
+    ): Response
     {
         $content = $request->toArray();
 
@@ -41,7 +47,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/login', name: 'login', methods: ['POST'])]
-    public function index(#[CurrentUser] ?User $user): Response
+    public function index(#[CurrentUser] ?User $user, JWTTokenManagerInterface $JWTManager): Response
     {
 
         if (null === $user) {
@@ -50,11 +56,28 @@ class UserController extends AbstractController
             ]);
         }
 
-        $token = Uuid::uuid6();
+        $token = $JWTManager->create($user);
 
         return $this->json([
             'token' => $token,
             'user' => $user->getUserIdentifier()
+        ]);
+    }
+
+    #[IsGranted('PUBLIC_ACCESS')]
+    #[Route('/action', name: 'action', methods: ['GET'])]
+    public function action(): Response
+    {
+        return $this->json([
+            'action' => 'action'
+        ]);
+    }
+
+    #[Route('/get-random-int', name:'random_int', methods: ['GET'])]
+    public function getRandomInt(): Response
+    {
+        return $this->json([
+            'rnd' => rand(1,100)
         ]);
     }
 }
