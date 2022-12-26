@@ -21,8 +21,7 @@ class UserController extends AbstractController
         UserRepository $userRepository,
         Request $request,
         UserPasswordHasherInterface $passwordHasher
-    ): Response
-    {
+    ): Response {
         $content = $request->toArray();
 
         $email = $content['email'] ?? null;
@@ -41,20 +40,19 @@ class UserController extends AbstractController
         $userRepository->save($user, true);
 
         return $this->json([
-            'user' => $user->getId()
+            'user' => $user->getId(),
         ]);
     }
 
     /**
-     * Метод для получения пользователя по логину и паролю
+     * Метод для получения пользователя по логину и паролю.
      */
     #[Route('/login', name: 'login', methods: ['POST'])]
     public function index(#[CurrentUser] ?User $user, JWTTokenManagerInterface $JWTManager): Response
     {
-
         if (null === $user) {
             return $this->json([
-                'message' => 'Неверные данные'
+                'message' => 'Неверные данные',
             ]);
         }
 
@@ -62,7 +60,7 @@ class UserController extends AbstractController
 
         return $this->json([
             'token' => $token,
-            'user' => $user->getUserIdentifier()
+            'user' => $user->getUserIdentifier(),
         ]);
     }
 
@@ -71,18 +69,18 @@ class UserController extends AbstractController
     public function action(): Response
     {
         return $this->json([
-            'action' => 'action'
+            'action' => 'action',
         ]);
     }
 
-    #[Route('/get-random-int', name:'random_int', methods: ['GET'])]
+    #[Route('/get-random-int', name: 'random_int', methods: ['GET'])]
     public function getRandomInt(): Response
     {
         $user = $this->getUser();
 
         return $this->json([
-            'rnd' => rand(1,100),
-            'user' => $user->getUserIdentifier()
+            'rnd' => rand(1, 100),
+            'user' => $user->getUserIdentifier(),
         ]);
     }
 }
