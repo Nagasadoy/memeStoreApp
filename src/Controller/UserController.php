@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use App\Service\UserService;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -82,5 +83,12 @@ class UserController extends AbstractController
             'rnd' => rand(1, 100),
             'user' => $user->getUserIdentifier(),
         ]);
+    }
+
+    #[Route('/logout', methods: ['POST'])]
+    public function logout(UserService $userService): Response
+    {
+        $userService->logout();
+        return new Response();
     }
 }

@@ -25,6 +25,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Combination::class)]
+    private array $combinations = [];
+
     public function __construct(string $email)
     {
         $this->email = $email;
