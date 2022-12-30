@@ -19,6 +19,11 @@ class Tag
     #[ORM\OneToMany(mappedBy: 'tags', targetEntity: Combination::class)]
     private array $combinations;
 
+    public function __construct(string $name)
+    {
+        $this->name = $name;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

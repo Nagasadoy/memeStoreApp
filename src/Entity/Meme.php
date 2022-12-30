@@ -22,6 +22,12 @@ class Meme
     #[ORM\Column(length: 255)]
     private ?string $fileName = null;
 
+    public function __construct(string $name, string $fileName)
+    {
+        $this->name = $name;
+        $this->fileName = $fileName;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

@@ -85,10 +85,11 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/logout', methods: ['POST'])]
-    public function logout(UserService $userService): Response
-    {
-        $userService->logout();
-        return new Response();
-    }
+
+    //#[Route('/logout', methods: ['POST'])]
+    //public function logout(UserService $userService): Response
+    //{
+    //    $userService->logout();
+    //    return new Response();
+    //}
 }
