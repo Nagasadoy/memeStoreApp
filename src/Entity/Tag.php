@@ -3,7 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\TagRepository;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: TagRepository::class)]
 class Tag
@@ -14,10 +16,11 @@ class Tag
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('combination:main')]
     private ?string $name = null;
 
     #[ORM\OneToMany(mappedBy: 'tags', targetEntity: Combination::class)]
-    private array $combinations;
+    private Collection $combinations;
 
     public function __construct(string $name)
     {

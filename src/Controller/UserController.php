@@ -19,10 +19,11 @@ class UserController extends AbstractController
 {
     #[Route('/registration', name: 'registration', methods: ['POST'])]
     public function registration(
-        UserRepository $userRepository,
-        Request $request,
+        UserRepository              $userRepository,
+        Request                     $request,
         UserPasswordHasherInterface $passwordHasher
-    ): Response {
+    ): Response
+    {
         $content = $request->toArray();
 
         $email = $content['email'] ?? null;
@@ -83,6 +84,63 @@ class UserController extends AbstractController
             'rnd' => rand(1, 100),
             'user' => $user->getUserIdentifier(),
         ]);
+    }
+
+    /**
+     * Делаем новую комбинацию (тэг + мем) и закрепляем за указанным пользователем
+     * По сути просто добавляем тэг к мему.
+     */
+    #[isGranted('ROLE_USER')]
+    #[Route('/create-combination', name: 'create_combination', methods: ['POST'])]
+    public function createNewCombination(Request $request, UserService $userService): Response
+    {
+        $content = $request->toArray();
+        $memeId = $content['memeId'];
+        $tagId = $content['tagId'];
+
+        $combination = $userService->createNewCombination($memeId, $tagId);
+
+        return $this->json([
+            'combination' => $combination->getId()
+        ]);
+    }
+
+    #[Route('/get-all-memes', name: 'get_all_memes', methods: ['GET'])]
+    public function getAllUserCombinations(): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        return $this->json(
+            [
+                'userId' => $user->getId(),
+                'combinations' => $user->getCombinations(),
+            ],
+            Response::HTTP_OK,
+            [],
+            ['groups' => 'combination:main']
+        );
+    }
+
+    #[Route('/remove-combination', name: 'remove_user_combination', methods: ['POST'])]
+    public function removeCombination(Request $request, UserService $userService): Response
+    {
+        $content = $request->toArray();
+        $memeId = $content['memeId'];
+        $tagId = $content['tagId'];
+
+        $userService->removeCombination(memeId: $memeId, tagId: $tagId);
+
+        return new Response();
+    }
+
+    #[Route('/remove-meme', name: 'remove_user_meme', methods: ['POST'])]
+    public function removeUserMeme(Request $request, UserService $userService): Response
+    {
+        $content = $request->toArray();
+        $memeId = $content['memeId'];
+        $userService->removeUserMeme($memeId);
+
+        return new Response();
     }
 
 

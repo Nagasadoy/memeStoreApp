@@ -3,7 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\MemeRepository;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: MemeRepository::class)]
 class Meme
@@ -14,12 +16,14 @@ class Meme
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('combination:main')]
     private ?string $name = null;
 
     #[ORM\OneToMany(mappedBy: 'memes', targetEntity: Combination::class)]
-    private array $combinations;
+    private Collection $combinations;
 
     #[ORM\Column(length: 255)]
+    #[Groups('combination:main')]
     private ?string $fileName = null;
 
     public function __construct(string $name, string $fileName)

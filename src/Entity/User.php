@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -15,18 +16,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('user:main')]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
 
     #[ORM\Column]
+    #[Groups('user:main')]
     private array $roles = [];
 
     #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Combination::class)]
+    #[ORM\OneToMany(
+        mappedBy: 'user',
+        targetEntity: Combination::class,
+        cascade: ['remove', 'persist'],
+        orphanRemoval: true)
+    ]
     private $combinations;
 
     public function __construct(string $email)
@@ -96,7 +104,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function addCombinationForUser(Combination $combination): void
+    public function getCombinations()
+    {
+        return $this->combinations;
+    }
+
+    public function addCombination(Combination $combination)
     {
         $this->combinations->add($combination);
     }

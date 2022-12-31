@@ -6,6 +6,7 @@ use App\Repository\CombinationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CombinationRepository::class)]
 class Combination
@@ -16,13 +17,15 @@ class Combination
     private ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: Meme::class, inversedBy: 'combinations')]
-    private Collection $memes;
+    #[Groups('combination:main')]
+    private Meme $meme;
 
     #[ORM\ManyToOne(targetEntity: Tag::class, inversedBy: 'combinations')]
-    private Collection $tags;
+    #[Groups('combination:main')]
+    private Tag $tag;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'combinations')]
-    private Collection $users;
+    private User $user;
 
     public function getId(): ?int
     {
@@ -31,13 +34,33 @@ class Combination
 
     public function __construct(Meme $meme, Tag $tag, User $user)
     {
-        $this->tags = new ArrayCollection();
-        $this->memes = new ArrayCollection();
-        $this->users = new ArrayCollection();
+        $this->meme = $meme;
+        $this->tag = $tag;
+        $this->user = $user;
+    }
 
-        $this->tags->add($tag);
-        $this->memes->add($meme);
-        $this->users->add($user);
+    /**
+     * @return Meme
+     */
+    public function getMeme(): Meme
+    {
+        return $this->meme;
+    }
+
+    /**
+     * @return Tag
+     */
+    public function getTag(): Tag
+    {
+        return $this->tag;
+    }
+
+    /**
+     * @return User
+     */
+    public function getUser(): User
+    {
+        return $this->user;
     }
 
 }

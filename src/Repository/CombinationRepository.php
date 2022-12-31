@@ -3,6 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Combination;
+use App\Entity\Meme;
+use App\Entity\Tag;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -39,28 +42,46 @@ class CombinationRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Combination[] Returns an array of Combination objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('c.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    /**
+     * @return Combination[]
+     */
+    public function getAllUserCombination(User $user): array
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.user = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getResult();
+    }
 
-//    public function findOneBySomeField($value): ?Combination
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    public function removeTag(Tag $tag, Meme $meme, User $user): void
+    {
+        $this->createQueryBuilder('c')
+            ->delete()
+            ->andWhere('c.tag = :tag')
+            ->andWhere('c.meme = :meme')
+            ->andWhere('c.user = :user')
+            ->setParameter('tag', $tag)
+            ->setParameter('user', $user)
+            ->setParameter('meme', $meme)
+            ->getQuery()
+            ->execute();
+
+        $this->getEntityManager()->flush();
+    }
+
+    public function removeUserMeme(Meme $meme, User $user): void
+    {
+        $this->createQueryBuilder('c')
+            ->delete()
+            ->andWhere('c.meme = :meme')
+            ->andWhere('c.user = :user')
+            ->setParameter('meme', $meme)
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->execute();
+
+        $this->getEntityManager()->flush();
+    }
+
 }
