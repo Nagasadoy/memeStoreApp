@@ -8,6 +8,7 @@ use App\Entity\Tag;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use mysql_xdevapi\Collection;
 
 /**
  * @extends ServiceEntityRepository<Combination>
@@ -82,6 +83,20 @@ class CombinationRepository extends ServiceEntityRepository
             ->execute();
 
         $this->getEntityManager()->flush();
+    }
+
+    public function searchByTags(array $tags, User $user): array
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.tag IN (:tags)')
+            ->andWhere('c.user = :user')
+            ->setParameter('tags', $tags)
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getResult();
+//        $this->findBy([
+//            'tag_id' => $tags
+//        ]);
     }
 
 }

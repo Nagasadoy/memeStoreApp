@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Combination;
 use App\Entity\User;
+use App\Repository\CombinationRepository;
 use App\Repository\UserRepository;
 use App\Service\UserService;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
@@ -141,6 +143,26 @@ class UserController extends AbstractController
         $userService->removeUserMeme($memeId);
 
         return new Response();
+    }
+
+    #[Route('/find-combination-by-tag', methods: ['POST'])]
+    public function findCombinationsByTags(Request $request, CombinationRepository $combinationRepository): Response
+    {
+        $content = $request->toArray();
+        $tags = $content['tags'];
+
+        $user = $this->getUser();
+
+        /** @var Combination[] $combinations */
+        $combinations = $combinationRepository->searchByTags($tags, $user);
+
+        return $this->json([
+            'combinations' => $combinations,
+        ],
+            Response::HTTP_OK,
+            [],
+            ['groups' => 'combination:main']
+        );
     }
 
 

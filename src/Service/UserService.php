@@ -64,4 +64,9 @@ class UserService
 
         $this->combinationRepository->removeUserMeme($meme, $user);
     }
+
+    public function findCombinationsByTags(array $tagsId)
+    {
+
+    }
 }
