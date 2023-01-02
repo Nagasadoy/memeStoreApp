@@ -17,6 +17,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('api/user', name: 'api_user_')]
 class UserController extends AbstractController
 {
+    /**
+     * Регистрация пользователя
+     */
     #[Route('/registration', name: 'registration', methods: ['POST'])]
     public function registration(
         UserRepository              $userRepository,
@@ -46,25 +49,25 @@ class UserController extends AbstractController
         ]);
     }
 
-    /**
-     * Метод для получения пользователя по логину и паролю.
-     */
-    #[Route('/login', name: 'login', methods: ['POST'])]
-    public function index(#[CurrentUser] ?User $user, JWTTokenManagerInterface $JWTManager): Response
-    {
-        if (null === $user) {
-            return $this->json([
-                'message' => 'Неверные данные',
-            ]);
-        }
-
-        $token = $JWTManager->create($user);
-
-        return $this->json([
-            'token' => $token,
-            'user' => $user->getUserIdentifier(),
-        ]);
-    }
+//    /**
+//     * Метод для получения пользователя по логину и паролю.
+//     */
+//    #[Route('/login', name: 'login', methods: ['POST'])]
+//    public function index(#[CurrentUser] ?User $user, JWTTokenManagerInterface $JWTManager): Response
+//    {
+//        if (null === $user) {
+//            return $this->json([
+//                'message' => 'Неверные данные',
+//            ]);
+//        }
+//
+//        $token = $JWTManager->create($user);
+//
+//        return $this->json([
+//            'token' => $token,
+//            'user' => $user->getUserIdentifier(),
+//        ]);
+//    }
 
     #[IsGranted('PUBLIC_ACCESS')]
     #[Route('/action', name: 'action', methods: ['GET'])]

@@ -3,9 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\MemeRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: MemeRepository::class)]
 class Meme
@@ -15,21 +15,23 @@ class Meme
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\ManyToOne(inversedBy: 'memes')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
+    #[ORM\ManyToOne(inversedBy: 'memes')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?MemeFile $memeFile = null;
+
     #[ORM\Column(length: 255)]
-    #[Groups('combination:main')]
-    private ?string $name = null;
+    private string $userMemeName;
 
-    #[ORM\OneToMany(mappedBy: 'memes', targetEntity: Combination::class)]
-    private Collection $combinations;
+    #[ORM\ManyToMany(targetEntity: Tag::class, mappedBy: 'memes')]
+    private Collection $tags;
 
-    #[ORM\Column(length: 255)]
-    #[Groups('combination:main')]
-    private ?string $fileName = null;
-
-    public function __construct(string $name, string $fileName)
+    public function __construct()
     {
-        $this->name = $name;
-        $this->fileName = $fileName;
+        $this->tags = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -37,26 +39,41 @@ class Meme
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getUser(): ?User
     {
-        return $this->name;
+        return $this->user;
     }
 
-    public function setName(string $name): self
+    public function setUser(?User $user): self
     {
-        $this->name = $name;
+        $this->user = $user;
 
         return $this;
     }
 
-    public function getFileName(): ?string
+    /**
+     * @return Collection<int, Tag>
+     */
+    public function getTags(): Collection
     {
-        return $this->fileName;
+        return $this->tags;
     }
 
-    public function setFileName(string $fileName): self
+    public function addTag(Tag $tag): self
     {
-        $this->fileName = $fileName;
+        if (!$this->tags->contains($tag)) {
+            $this->tags->add($tag);
+            $tag->addMeme($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTag(Tag $tag): self
+    {
+        if ($this->tags->removeElement($tag)) {
+            $tag->removeMeme($this);
+        }
 
         return $this;
     }

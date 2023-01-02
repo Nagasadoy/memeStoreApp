@@ -3,9 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\TagRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: TagRepository::class)]
 class Tag
@@ -16,15 +16,14 @@ class Tag
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('combination:main')]
     private ?string $name = null;
 
-    #[ORM\OneToMany(mappedBy: 'tags', targetEntity: Combination::class)]
-    private Collection $combinations;
+    #[ORM\ManyToMany(targetEntity: Meme::class, inversedBy: 'tags')]
+    private Collection $memes;
 
-    public function __construct(string $name)
+    public function __construct()
     {
-        $this->name = $name;
+        $this->memes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -40,6 +39,30 @@ class Tag
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Meme>
+     */
+    public function getMemes(): Collection
+    {
+        return $this->memes;
+    }
+
+    public function addMeme(Meme $meme): self
+    {
+        if (!$this->memes->contains($meme)) {
+            $this->memes->add($meme);
+        }
+
+        return $this;
+    }
+
+    public function removeMeme(Meme $meme): self
+    {
+        $this->memes->removeElement($meme);
 
         return $this;
     }

@@ -26,7 +26,7 @@ security:
             stateless: true
             entry_point: jwt
             json_login:
-                check_path: /api/login_check
+                check_path: /api/user/login
                 username_path: email
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
@@ -35,7 +35,8 @@ security:
                 check_path: /api/token/refresh # or, you may use the `api_refresh_token` route name
 
     access_control:
-        - { path: ^/api/(login_check|login/refresh), roles: PUBLIC_ACCESS }
+        - { path: ^/api/user/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS }
         - { path: ^/api/user/registration, roles: PUBLIC_ACCESS }
         - { path: ^/api/user/action, roles: PUBLIC_ACCESS }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }

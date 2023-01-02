@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -29,18 +30,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\OneToMany(
-        mappedBy: 'user',
-        targetEntity: Combination::class,
-        cascade: ['remove', 'persist'],
-        orphanRemoval: true)
-    ]
-    private $combinations;
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Meme::class, orphanRemoval: true)]
+    private Collection $memes;
+
+//    #[ORM\OneToMany(
+//        mappedBy: 'user',
+//        targetEntity: Combination::class,
+//        cascade: ['remove', 'persist'],
+//        orphanRemoval: true)
+//    ]
+//    private $combinations;
 
     public function __construct(string $email)
     {
         $this->email = $email;
         $this->combinations = new ArrayCollection();
+        $this->memFile = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -109,15 +114,40 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->combinations;
     }
 
-    public function addCombination(Combination $combination)
-    {
-        $this->combinations->add($combination);
-    }
-
     /**
      * @see UserInterface
      */
     public function eraseCredentials()
     {
     }
+
+    /**
+     * @return Collection<int, Meme>
+     */
+    public function getMemFile(): Collection
+    {
+        return $this->memes;
+    }
+
+//    public function addMemFile(Meme $memFile): self
+//    {
+//        if (!$this->memFile->contains($memFile)) {
+//            $this->memFile->add($memFile);
+//            $memFile->setUser($this);
+//        }
+//
+//        return $this;
+//    }
+//
+//    public function removeMemFile(Meme $memFile): self
+//    {
+//        if ($this->memFile->removeElement($memFile)) {
+//            // set the owning side to null (unless already changed)
+//            if ($memFile->getUser() === $this) {
+//                $memFile->setUser(null);
+//            }
+//        }
+//
+//        return $this;
+//    }
 }
