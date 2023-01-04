@@ -6,6 +6,7 @@ use App\Repository\MemeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: MemeRepository::class)]
 class Meme
@@ -13,6 +14,7 @@ class Meme
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('meme:main')]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'memes')]
@@ -24,13 +26,19 @@ class Meme
     private ?MemeFile $memeFile = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('meme:main')]
     private string $userMemeName;
 
     #[ORM\ManyToMany(targetEntity: Tag::class, mappedBy: 'memes')]
+    #[Groups('meme:main')]
     private Collection $tags;
 
-    public function __construct()
+    public function __construct(User $user, MemeFile $memeFile, string $userMemeName)
     {
+        $this->user = $user;
+        $this->memeFile = $memeFile;
+        $this->userMemeName = $userMemeName;
+
         $this->tags = new ArrayCollection();
     }
 
@@ -76,5 +84,10 @@ class Meme
         }
 
         return $this;
+    }
+
+    public function getUserMemeName(): string
+    {
+        return $this->userMemeName;
     }
 }

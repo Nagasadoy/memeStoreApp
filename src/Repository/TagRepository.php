@@ -39,4 +39,17 @@ class TagRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @param string[] $ids
+     * @return Tag[]
+     */
+    public function findByArrayIds(array $ids): array
+    {
+        return $this->createQueryBuilder('t')
+            ->where('t.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getResult();
+    }
+
 }

@@ -23,6 +23,13 @@ class MemeFile
     #[ORM\OneToMany(mappedBy: 'memeFile', targetEntity: Meme::class, orphanRemoval: true)]
     private Collection $memes;
 
+
+    public function __construct(string $commonName, string $fileName)
+    {
+        $this->fileName = $fileName;
+        $this->commonName = $commonName;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

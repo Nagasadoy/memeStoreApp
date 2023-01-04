@@ -44,7 +44,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __construct(string $email)
     {
         $this->email = $email;
-        $this->combinations = new ArrayCollection();
+        $this->memes = new ArrayCollection();
         $this->memFile = new ArrayCollection();
     }
 
@@ -109,11 +109,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getCombinations()
-    {
-        return $this->combinations;
-    }
-
     /**
      * @see UserInterface
      */
@@ -124,30 +119,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection<int, Meme>
      */
-    public function getMemFile(): Collection
+    public function getMemes(): Collection
     {
         return $this->memes;
     }
 
-//    public function addMemFile(Meme $memFile): self
-//    {
-//        if (!$this->memFile->contains($memFile)) {
-//            $this->memFile->add($memFile);
-//            $memFile->setUser($this);
-//        }
-//
-//        return $this;
-//    }
-//
-//    public function removeMemFile(Meme $memFile): self
-//    {
-//        if ($this->memFile->removeElement($memFile)) {
-//            // set the owning side to null (unless already changed)
-//            if ($memFile->getUser() === $this) {
-//                $memFile->setUser(null);
-//            }
-//        }
-//
-//        return $this;
-//    }
 }

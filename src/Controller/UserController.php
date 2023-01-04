@@ -49,6 +49,21 @@ class UserController extends AbstractController
         ]);
     }
 
+    #[isGranted('IS_AUTHENTICATED_FULLY')]
+    #[Route('/memes')]
+    public function getMemes(): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        $memes = $user->getMemes();
+        return $this->json(
+            ['memes' => $memes],
+            Response::HTTP_OK,
+            [],
+            ['groups' => ['meme:main', 'tag:main']]
+        );
+    }
+
 //    /**
 //     * Метод для получения пользователя по логину и паролю.
 //     */
