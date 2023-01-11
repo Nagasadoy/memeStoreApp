@@ -21,7 +21,8 @@
         "symfony/runtime": "6.2.*",
         "symfony/security-bundle": "6.2.*",
         "symfony/serializer": "6.2.*",
-        "symfony/yaml": "6.2.*"
+        "symfony/yaml": "6.2.*",
+        "vich/uploader-bundle": "^2.0"
     },
     "config": {
         "allow-plugins": {

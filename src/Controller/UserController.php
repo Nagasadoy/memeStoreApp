@@ -18,15 +18,14 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class UserController extends AbstractController
 {
     /**
-     * Регистрация пользователя
+     * Регистрация пользователя.
      */
     #[Route('/registration', name: 'registration', methods: ['POST'])]
     public function registration(
-        UserRepository              $userRepository,
-        Request                     $request,
+        UserRepository $userRepository,
+        Request $request,
         UserPasswordHasherInterface $passwordHasher
-    ): Response
-    {
+    ): Response {
         $content = $request->toArray();
 
         $email = $content['email'] ?? null;
@@ -56,6 +55,7 @@ class UserController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
         $memes = $user->getMemes();
+
         return $this->json(
             ['memes' => $memes],
             Response::HTTP_OK,
@@ -119,7 +119,7 @@ class UserController extends AbstractController
         $combination = $userService->createNewCombination($memeId, $tagId);
 
         return $this->json([
-            'combination' => $combination->getId()
+            'combination' => $combination->getId(),
         ]);
     }
 
@@ -128,6 +128,7 @@ class UserController extends AbstractController
     {
         /** @var User $user */
         $user = $this->getUser();
+
         return $this->json(
             [
                 'userId' => $user->getId(),
@@ -161,11 +162,10 @@ class UserController extends AbstractController
         return new Response();
     }
 
-
-    //#[Route('/logout', methods: ['POST'])]
-    //public function logout(UserService $userService): Response
-    //{
+    // #[Route('/logout', methods: ['POST'])]
+    // public function logout(UserService $userService): Response
+    // {
     //    $userService->logout();
     //    return new Response();
-    //}
+    // }
 }
