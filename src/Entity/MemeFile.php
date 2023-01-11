@@ -5,7 +5,8 @@ namespace App\Entity;
 use App\Repository\MemeFileRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Vich\UploaderBundle\Entity\File;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: MemeFileRepository::class)]
@@ -26,15 +27,14 @@ class MemeFile
     #[Vich\UploadableField(mapping: 'memes', fileNameProperty: 'fileName')]
     private File $file;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: 'datetime_immutable')]
     private \DateTimeImmutable $updatedAt;
 
     #[ORM\OneToMany(mappedBy: 'memeFile', targetEntity: Meme::class, orphanRemoval: true)]
     private Collection $memes;
 
-    public function __construct(string $commonName, string $fileName)
+    public function __construct(string $commonName)
     {
-        $this->fileName = $fileName;
         $this->commonName = $commonName;
         $this->updatedAt = new \DateTimeImmutable();
     }

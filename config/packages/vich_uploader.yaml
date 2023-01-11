@@ -10,5 +10,5 @@ vich_uploader:
     mappings:
         memes:
             uri_prefix: /images/memeFiles
-            upload_destination: '%kernel.project_dir%/public/images/products'
-#            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+            upload_destination: '%kernel.project_dir%/public/images/memes'
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer

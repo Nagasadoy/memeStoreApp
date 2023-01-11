@@ -2,9 +2,13 @@
 
 namespace App\Controller;
 
+use App\Entity\MemeFile;
 use App\Entity\User;
 use App\Service\MemeService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -14,16 +18,32 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class MemeController extends AbstractController
 {
     #[Route('/file/create', name: 'file_create', methods: ['POST'])]
-    public function createFileMeme(Request $request, MemeService $memeService): Response
+    public function createFileMeme(
+        Request $request,
+        MemeService $memeService,
+        EntityManagerInterface $entityManager
+    ): Response
     {
-        $content = $request->toArray();
 
-        $commonName = $content['commonName'];
-        $fileName = $content['fileName'];
+        /** @var File $file */
+        $file = $request->files->get('file');
 
-        $memeFile = $memeService->createMemeFile($commonName, $fileName);
+        $memeFile = new MemeFile($file->getFilename());
+        $memeFile->setFile($file);
+
+        $entityManager->persist($memeFile);
+        $entityManager->flush();
 
         return $this->json($memeFile);
+    }
+
+    #[Route('/file/delete/{id}', name: 'file_delete', methods: ['POST'])]
+    #[ParamConverter('memeFile', MemeFile::class)]
+    public function removeFile(MemeFile $memeFile, EntityManagerInterface $entityManager)
+    {
+        $entityManager->remove($memeFile);
+        $entityManager->flush();
+        return new Response();
     }
 
     #[isGranted('IS_AUTHENTICATED_FULLY')]
@@ -40,7 +60,7 @@ class MemeController extends AbstractController
         $meme = $memeService->createMeme($user, $memeFileId, $userMemeFile);
 
         return $this->json([
-            'id' => $meme->getId()
+            'id' => $meme->getId(),
         ]);
     }
 
