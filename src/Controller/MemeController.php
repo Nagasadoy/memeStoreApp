@@ -34,7 +34,9 @@ class MemeController extends AbstractController
         $entityManager->persist($memeFile);
         $entityManager->flush();
 
-        return $this->json($memeFile);
+        return $this->json([
+        'id' => $memeFile->getId(),
+    ]);
     }
 
     #[Route('/file/delete/{id}', name: 'file_delete', methods: ['POST'])]
@@ -42,8 +44,12 @@ class MemeController extends AbstractController
     public function removeFile(MemeFile $memeFile, EntityManagerInterface $entityManager)
     {
         $entityManager->remove($memeFile);
+        $removedId = $memeFile->getId();
         $entityManager->flush();
-        return new Response();
+        return $this->json([
+            'id' => $removedId,
+            'message' => ' Removed successfully',
+        ]);
     }
 
     #[isGranted('IS_AUTHENTICATED_FULLY')]
