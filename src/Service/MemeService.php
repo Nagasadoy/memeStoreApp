@@ -13,28 +13,20 @@ class MemeService
 {
     public function __construct(
         private readonly MemeFileRepository $memeFileRepository,
-        private readonly MemeRepository     $memeRepository,
-        private readonly TagRepository      $tagRepository,
-    )
-    {
+        private readonly MemeRepository $memeRepository,
+        private readonly TagRepository $tagRepository,
+    ) {
     }
 
-    public function createMemeFile(string $commonName, string $fileName): MemeFile
-    {
-        $memeFile = new MemeFile($commonName, $fileName);
-        $this->memeFileRepository->save($memeFile, true);
-        return $memeFile;
-    }
-
-    public function createMeme(User $user, string $memeFileId, string $userMemeFile): Meme
+    public function createMeme(User $user, string $memeFileId, string $userMemeName): Meme
     {
         $memeFile = $this->memeFileRepository->find($memeFileId);
 
         if (null === $memeFile) {
-            throw new \DomainException('Не удалось найти файл по этому id ' . $memeFileId);
+            throw new \DomainException('Не удалось найти файл по этому id '.$memeFileId);
         }
 
-        $meme = new Meme($user, $memeFile, $userMemeFile);
+        $meme = new Meme($user, $memeFile, $userMemeName);
         $this->memeRepository->save($meme, true);
 
         return $meme;

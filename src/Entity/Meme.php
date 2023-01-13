@@ -17,7 +17,7 @@ class Meme
     #[Groups('meme:main')]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'memes')]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'memes')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
@@ -33,13 +33,21 @@ class Meme
     #[Groups('meme:main')]
     private Collection $tags;
 
+    #[Groups('meme:main')]
+    private readonly ?string $fileLink;
+
     public function __construct(User $user, MemeFile $memeFile, string $userMemeName)
     {
         $this->user = $user;
         $this->memeFile = $memeFile;
         $this->userMemeName = $userMemeName;
-
+        $this->fileLink = $memeFile->getFileName();
         $this->tags = new ArrayCollection();
+    }
+
+    public function getFileLink(): ?string
+    {
+        return $this->fileLink;
     }
 
     public function getId(): ?int

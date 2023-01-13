@@ -9,6 +9,10 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: TagRepository::class)]
+#[ORM\UniqueConstraint(
+    name: 'name_tag_unique',
+    columns: ['name']
+)]
 class Tag
 {
     #[ORM\Id]
@@ -19,7 +23,7 @@ class Tag
 
     #[ORM\Column(length: 255)]
     #[Groups('tag:main')]
-    private ?string $name = null;
+    private string $name;
 
     #[ORM\ManyToMany(targetEntity: Meme::class, inversedBy: 'tags')]
     private Collection $memes;
@@ -35,7 +39,7 @@ class Tag
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }

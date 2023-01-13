@@ -4,10 +4,11 @@ namespace App\Controller;
 
 use App\Entity\MemeFile;
 use App\Entity\User;
+use App\Repository\MemeRepository;
 use App\Service\MemeService;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,9 +23,7 @@ class MemeController extends AbstractController
         Request $request,
         MemeService $memeService,
         EntityManagerInterface $entityManager
-    ): Response
-    {
-
+    ): Response {
         /** @var File $file */
         $file = $request->files->get('file');
 
@@ -35,8 +34,8 @@ class MemeController extends AbstractController
         $entityManager->flush();
 
         return $this->json([
-        'id' => $memeFile->getId(),
-    ]);
+            'id' => $memeFile->getId(),
+        ]);
     }
 
     #[Route('/file/delete/{id}', name: 'file_delete', methods: ['POST'])]
@@ -46,6 +45,7 @@ class MemeController extends AbstractController
         $entityManager->remove($memeFile);
         $removedId = $memeFile->getId();
         $entityManager->flush();
+
         return $this->json([
             'id' => $removedId,
             'message' => ' Removed successfully',
@@ -60,10 +60,10 @@ class MemeController extends AbstractController
         $user = $this->getUser();
 
         $content = $request->toArray();
-        $userMemeFile = $content['userMemeFile'];
+        $userMemeName = $content['userMemeName'];
         $memeFileId = $content['memeFileId'];
 
-        $meme = $memeService->createMeme($user, $memeFileId, $userMemeFile);
+        $meme = $memeService->createMeme($user, $memeFileId, $userMemeName);
 
         return $this->json([
             'id' => $meme->getId(),
@@ -72,14 +72,27 @@ class MemeController extends AbstractController
 
     #[isGranted('IS_AUTHENTICATED_FULLY')]
     #[Route('/tag/add', name: 'add_tag', methods: ['POST'])]
-    public function addTag(Request $request, MemeService $memeService): Response
+    public function addTags(
+        Request $request,
+        MemeService $memeService,
+        MemeRepository $memeRepository
+    ): Response
     {
         $content = $request->toArray();
+
         $tagIds = $content['tagIds'];
         $memeId = $content['memeId'];
 
+        /** @var User $user */
+        $user = $this->getUser();
+        $meme = $memeRepository->find($memeId);
+
+        if(!$user->hasMeme($meme)) {
+            throw new \DomainException('У пользователя нет такого мема');
+        }
+
         $memeService->addTags($memeId, $tagIds);
 
-        return new Response();
+        return $this->json($meme);
     }
 }
