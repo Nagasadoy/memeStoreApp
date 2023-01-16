@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 #[ORM\Entity(repositoryClass: MemeRepository::class)]
 #[ORM\UniqueConstraint(
@@ -42,15 +43,24 @@ class Meme
     private Collection $tags;
 
     #[Groups('meme:main')]
-    private readonly ?string $fileLink;
+    private ?string $fileLink;
 
     public function __construct(User $user, MemeFile $memeFile, string $userMemeName)
     {
         $this->user = $user;
         $this->memeFile = $memeFile;
         $this->userMemeName = $userMemeName;
-        $this->fileLink = $memeFile->getFileName();
         $this->tags = new ArrayCollection();
+
+        $this->fileLink = 'gegege';
+    }
+
+    /**
+     * @param string|null $fileLink
+     */
+    public function setFileLink(?string $fileLink): void
+    {
+        $this->fileLink = $fileLink;
     }
 
     public function getFileLink(): ?string
@@ -91,6 +101,11 @@ class Meme
         }
 
         return $this;
+    }
+
+    public function getMemeFile(): ?MemeFile
+    {
+        return $this->memeFile;
     }
 
     public function removeTag(Tag $tag): self

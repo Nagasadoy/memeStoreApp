@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 #[Route('/api/meme', name: 'meme_')]
 class MemeController extends AbstractController
@@ -71,13 +72,15 @@ class MemeController extends AbstractController
 
     #[isGranted('IS_AUTHENTICATED_FULLY')]
     #[Route('/create', name: 'create', methods: ['POST'])]
-    public function createMeme(CreateMemeDTO $createMemeDTO, MemeService $memeService): Response
-    {
+    public function createMeme(
+        CreateMemeDTO $createMemeDTO,
+        MemeService $memeService,
+        UploaderHelper $uploaderHelper
+    ): Response {
         $meme = $memeService->createMeme($createMemeDTO);
+        $meme->setFileLink($uploaderHelper->asset($meme->getMemeFile()));
 
-        return $this->json([
-            'id' => $meme->getId(),
-        ]);
+        return $this->json($meme, Response::HTTP_OK, [], ['groups' => ['meme:main', 'tag:main']]);
     }
 
     #[isGranted('IS_AUTHENTICATED_FULLY')]
@@ -85,9 +88,12 @@ class MemeController extends AbstractController
     public function addTags(
         AddTagDTO $addTagDTO,
         MemeService $memeService,
+        UploaderHelper $uploaderHelper,
     ): Response {
         $meme = $addTagDTO->getMeme();
         $memeService->addTags($meme, $addTagDTO->getTags());
+
+        $meme->setFileLink($uploaderHelper->asset($meme->getMemeFile()));
 
         return $this->json($meme, Response::HTTP_OK, [], ['groups' => ['meme:main', 'tag:main']]);
     }

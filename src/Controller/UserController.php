@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 #[Route('api/user', name: 'api_user_')]
 class UserController extends AbstractController
@@ -48,13 +49,17 @@ class UserController extends AbstractController
 
     #[isGranted('IS_AUTHENTICATED_FULLY')]
     #[Route('/memes')]
-    public function getMemes(): Response
+    public function getMemes(UploaderHelper $uploaderHelper): Response
     {
         /** @var User $user */
         $user = $this->getUser();
         $memes = $user->getMemes();
 
-        $x = 1;
+        // вот такой костыль, чтобы получать ссылки
+        foreach ($memes as $meme) {
+            $link = $uploaderHelper->asset($meme->getMemeFile());
+            $meme->setFileLink($link);
+        }
 
         return $this->json(
             ['memes' => $memes],
