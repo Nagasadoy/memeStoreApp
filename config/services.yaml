@@ -20,6 +20,10 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
-    App\Resolver\TagResolver:
+#    App\Resolver\TagResolver:
+#        tags:
+#            - { name: controller.argument_value_resolver, priority: 150 }
+
+    Fusonic\HttpKernelExtensions\Controller\RequestDtoResolver:
         tags:
-            - { name: controller.argument_value_resolver, priority: 150 }
+            - { name: controller.argument_value_resolver, priority: 50 }
