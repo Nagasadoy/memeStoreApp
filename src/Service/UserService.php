@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Combination;
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Repository\CombinationRepository;
 use App\Repository\MemeRepository;
 use App\Repository\TagRepository;

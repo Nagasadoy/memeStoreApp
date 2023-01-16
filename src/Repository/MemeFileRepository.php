@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\MemeFile;
+use App\Entity\Meme\MemeFile;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

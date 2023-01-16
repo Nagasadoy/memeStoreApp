@@ -1,7 +1,9 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Meme;
 
+use App\Entity\Tag\Tag;
+use App\Entity\User\User;
 use App\Repository\MemeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;

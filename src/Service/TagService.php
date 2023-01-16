@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use App\Entity\Tag;
+use App\Entity\Tag\Tag;
 use App\Repository\TagRepository;
 
 class TagService

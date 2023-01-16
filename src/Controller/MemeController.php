@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\MemeFile;
-use App\Entity\User;
+use App\Entity\Meme\MemeFile;
+use App\Entity\User\User;
 use App\Repository\MemeRepository;
 use App\Service\MemeService;
 use Doctrine\ORM\EntityManagerInterface;

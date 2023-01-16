@@ -2,9 +2,8 @@
 
 namespace App\Service;
 
-use App\Entity\Meme;
-use App\Entity\MemeFile;
-use App\Entity\User;
+use App\Entity\Meme\Meme;
+use App\Entity\User\User;
 use App\Repository\MemeFileRepository;
 use App\Repository\MemeRepository;
 use App\Repository\TagRepository;
@@ -27,6 +26,8 @@ class MemeService
         }
 
         $meme = new Meme($user, $memeFile, $userMemeName);
+
+        $user->
         $this->memeRepository->save($meme, true);
 
         return $meme;
