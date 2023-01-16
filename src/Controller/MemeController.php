@@ -6,7 +6,9 @@ use App\Entity\Meme\DTO\CreateMemeDTO;
 use App\Entity\Meme\Meme;
 use App\Entity\Meme\MemeFile;
 use App\Entity\Tag\DTO\AddTagDTO;
+use App\Entity\User\User;
 use App\Service\MemeService;
+use App\Service\UserService;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -55,14 +57,17 @@ class MemeController extends AbstractController
             'message' => ' Removed successfully',
         ]);
     }
-    //
-    //#[isGranted('IS_AUTHENTICATED_FULLY')]
-    //#[Route('/remove/{id}', name: 'remove', methods: ['POST'])]
-    //#[ParamConverter('meme', Meme::class)]
-    //public function removeMeme(M)
-    //{
-    //
-    //}
+
+    #[isGranted('IS_AUTHENTICATED_FULLY')]
+    #[Route('/remove/{id}', name: 'remove', methods: ['DELETE'])]
+    #[ParamConverter('meme', Meme::class)]
+    public function removeMeme(Meme $meme, UserService $userService)
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        $userService->removeUserMeme($user, $meme);
+        return new Response('');
+    }
 
     #[isGranted('IS_AUTHENTICATED_FULLY')]
     #[Route('/create', name: 'create', methods: ['POST'])]

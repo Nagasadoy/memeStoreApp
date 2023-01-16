@@ -64,16 +64,6 @@ class UserController extends AbstractController
         );
     }
 
-    #[Route('/remove-meme', name: 'remove_user_meme', methods: ['POST'])]
-    public function removeUserMeme(Request $request, UserService $userService): Response
-    {
-        $content = $request->toArray();
-        $memeId = $content['memeId'];
-        $userService->removeUserMeme($memeId);
-
-        return new Response();
-    }
-
     // #[Route('/logout', methods: ['POST'])]
     // public function logout(UserService $userService): Response
     // {

@@ -127,4 +127,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->memes->add($meme);
         $meme->setUser($this);
     }
+
+    public function removeMeme(Meme $meme): void
+    {
+        $this->memes->removeElement($meme);
+    }
 }
