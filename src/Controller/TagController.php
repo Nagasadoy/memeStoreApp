@@ -16,6 +16,11 @@ class TagController extends AbstractController
     {
         $tag = $tagService->create($createTagDTO->getName());
 
-        return $this->json($tag);
+        return $this->json(
+            $tag,
+            Response::HTTP_OK,
+            [],
+            ['groups' => ['tag:main']]
+        );
     }
 }

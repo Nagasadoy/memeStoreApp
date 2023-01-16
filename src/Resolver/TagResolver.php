@@ -6,7 +6,6 @@ use App\Entity\Tag\DTO\CreateTagDTO;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
-use Symfony\Component\Validator\Exception\ValidatorException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class TagResolver implements ValueResolverInterface
@@ -34,7 +33,7 @@ class TagResolver implements ValueResolverInterface
             foreach ($errors as $error) {
                 $messages .= $error->getMessage().' ';
             }
-            throw new ValidatorException('Не пройдена валидация! '.$messages);
+            throw new \DomainException('Не пройдена валидация! '.$messages);
         }
 
         return [$dto];
