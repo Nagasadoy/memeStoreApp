@@ -54,100 +54,14 @@ class UserController extends AbstractController
         $user = $this->getUser();
         $memes = $user->getMemes();
 
+        $x = 1;
+
         return $this->json(
             ['memes' => $memes],
             Response::HTTP_OK,
             [],
             ['groups' => ['meme:main', 'tag:main']]
         );
-    }
-
-//    /**
-//     * Метод для получения пользователя по логину и паролю.
-//     */
-//    #[Route('/login', name: 'login', methods: ['POST'])]
-//    public function index(#[CurrentUser] ?User $user, JWTTokenManagerInterface $JWTManager): Response
-//    {
-//        if (null === $user) {
-//            return $this->json([
-//                'message' => 'Неверные данные',
-//            ]);
-//        }
-//
-//        $token = $JWTManager->create($user);
-//
-//        return $this->json([
-//            'token' => $token,
-//            'user' => $user->getUserIdentifier(),
-//        ]);
-//    }
-
-    #[IsGranted('PUBLIC_ACCESS')]
-    #[Route('/action', name: 'action', methods: ['GET'])]
-    public function action(): Response
-    {
-        return $this->json([
-            'action' => 'action',
-        ]);
-    }
-
-    #[Route('/get-random-int', name: 'random_int', methods: ['GET'])]
-    public function getRandomInt(): Response
-    {
-        $user = $this->getUser();
-
-        return $this->json([
-            'rnd' => rand(1, 100),
-            'user' => $user->getUserIdentifier(),
-        ]);
-    }
-
-    /**
-     * Делаем новую комбинацию (тэг + мем) и закрепляем за указанным пользователем
-     * По сути просто добавляем тэг к мему.
-     */
-    #[isGranted('ROLE_USER')]
-    #[Route('/create-combination', name: 'create_combination', methods: ['POST'])]
-    public function createNewCombination(Request $request, UserService $userService): Response
-    {
-        $content = $request->toArray();
-        $memeId = $content['memeId'];
-        $tagId = $content['tagId'];
-
-        $combination = $userService->createNewCombination($memeId, $tagId);
-
-        return $this->json([
-            'combination' => $combination->getId(),
-        ]);
-    }
-
-    #[Route('/get-all-memes', name: 'get_all_memes', methods: ['GET'])]
-    public function getAllUserCombinations(): Response
-    {
-        /** @var User $user */
-        $user = $this->getUser();
-
-        return $this->json(
-            [
-                'userId' => $user->getId(),
-                'combinations' => $user->getCombinations(),
-            ],
-            Response::HTTP_OK,
-            [],
-            ['groups' => 'combination:main']
-        );
-    }
-
-    #[Route('/remove-combination', name: 'remove_user_combination', methods: ['POST'])]
-    public function removeCombination(Request $request, UserService $userService): Response
-    {
-        $content = $request->toArray();
-        $memeId = $content['memeId'];
-        $tagId = $content['tagId'];
-
-        $userService->removeCombination(memeId: $memeId, tagId: $tagId);
-
-        return new Response();
     }
 
     #[Route('/remove-meme', name: 'remove_user_meme', methods: ['POST'])]

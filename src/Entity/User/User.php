@@ -119,11 +119,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function hasMeme(Meme $meme): bool
     {
-        return in_array($meme, (array) $this->memes);
+        return $this->memes->contains($meme);
     }
 
     public function addMeme(Meme $meme): void
     {
         $this->memes->add($meme);
+        $meme->setUser($this);
     }
 }

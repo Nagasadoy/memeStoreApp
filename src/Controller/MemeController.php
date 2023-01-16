@@ -3,9 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Meme\DTO\CreateMemeDTO;
+use App\Entity\Meme\Meme;
 use App\Entity\Meme\MemeFile;
-use App\Entity\User\User;
-use App\Repository\MemeRepository;
+use App\Entity\Tag\DTO\AddTagDTO;
 use App\Service\MemeService;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -43,6 +43,9 @@ class MemeController extends AbstractController
     #[ParamConverter('memeFile', MemeFile::class)]
     public function removeFile(MemeFile $memeFile, EntityManagerInterface $entityManager)
     {
+        // По сути дела этот маршрут вообще не нужен, был добавлен, чтобы протестировать vich uploader
+        // (что удаляются по-настоящему файлы, при удалении из БД)
+
         $entityManager->remove($memeFile);
         $removedId = $memeFile->getId();
         $entityManager->flush();
@@ -52,12 +55,21 @@ class MemeController extends AbstractController
             'message' => ' Removed successfully',
         ]);
     }
+    //
+    //#[isGranted('IS_AUTHENTICATED_FULLY')]
+    //#[Route('/remove/{id}', name: 'remove', methods: ['POST'])]
+    //#[ParamConverter('meme', Meme::class)]
+    //public function removeMeme(M)
+    //{
+    //
+    //}
 
     #[isGranted('IS_AUTHENTICATED_FULLY')]
     #[Route('/create', name: 'create', methods: ['POST'])]
     public function createMeme(CreateMemeDTO $createMemeDTO, MemeService $memeService): Response
     {
         $meme = $memeService->createMeme($createMemeDTO);
+
         return $this->json([
             'id' => $meme->getId(),
         ]);
@@ -66,26 +78,12 @@ class MemeController extends AbstractController
     #[isGranted('IS_AUTHENTICATED_FULLY')]
     #[Route('/tag/add', name: 'add_tag', methods: ['POST'])]
     public function addTags(
-        Request $request,
+        AddTagDTO $addTagDTO,
         MemeService $memeService,
-        MemeRepository $memeRepository
-    ): Response
-    {
-        $content = $request->toArray();
+    ): Response {
+        $meme = $addTagDTO->getMeme();
+        $memeService->addTags($meme, $addTagDTO->getTags());
 
-        $tagIds = $content['tagIds'];
-        $memeId = $content['memeId'];
-
-        /** @var User $user */
-        $user = $this->getUser();
-        $meme = $memeRepository->find($memeId);
-
-        if(!$user->hasMeme($meme)) {
-            throw new \DomainException('У пользователя нет такого мема');
-        }
-
-        $memeService->addTags($memeId, $tagIds);
-
-        return $this->json($meme);
+        return $this->json($meme, Response::HTTP_OK, [], ['groups' => ['meme:main', 'tag:main']]);
     }
 }

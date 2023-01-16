@@ -33,11 +33,8 @@ class MemeService
         return $meme;
     }
 
-    public function addTags(string $memeId, array $tagIds)
+    public function addTags(Meme $meme, array $tags)
     {
-        $meme = $this->memeRepository->find($memeId);
-        $tags = $this->tagRepository->findByArrayIds($tagIds);
-
         array_map(static function ($tag) use ($meme) {
             $meme->addTag($tag);
         }, $tags);
