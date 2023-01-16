@@ -8,9 +8,9 @@ use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class TagResolver implements ValueResolverInterface
+class TagResolver extends BaseResolver implements ValueResolverInterface
 {
-    public function __construct(private ValidatorInterface $validator)
+    public function __construct(private readonly ValidatorInterface $validator)
     {
     }
 
@@ -22,19 +22,8 @@ class TagResolver implements ValueResolverInterface
         if (CreateTagDTO::class != $argumentType) {
             return [];
         }
-        $content = $request->toArray();
-
-        $dto = $argumentType::fromString($content);
-
-        $errors = $this->validator->validate($dto);
-
-        if (count($errors) > 0) {
-            $messages = '';
-            foreach ($errors as $error) {
-                $messages .= $error->getMessage().' ';
-            }
-            throw new \DomainException('Не пройдена валидация! '.$messages);
-        }
+        $dto = $argumentType::fromRequest($request);
+        $this->validateEntity($dto, $this->validator);
 
         return [$dto];
     }

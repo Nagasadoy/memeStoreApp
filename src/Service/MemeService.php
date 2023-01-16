@@ -2,33 +2,33 @@
 
 namespace App\Service;
 
+use App\Entity\Meme\DTO\CreateMemeDTO;
 use App\Entity\Meme\Meme;
 use App\Entity\User\User;
 use App\Repository\MemeFileRepository;
 use App\Repository\MemeRepository;
 use App\Repository\TagRepository;
+use Doctrine\ORM\EntityManagerInterface;
 
 class MemeService
 {
     public function __construct(
-        private readonly MemeFileRepository $memeFileRepository,
+        //private readonly MemeFileRepository $memeFileRepository,
         private readonly MemeRepository $memeRepository,
         private readonly TagRepository $tagRepository,
+        private readonly EntityManagerInterface $entityManager,
     ) {
     }
 
-    public function createMeme(User $user, string $memeFileId, string $userMemeName): Meme
+    public function createMeme(CreateMemeDTO $createMemeDTO/* User $user, string $memeFileId, string $userMemeName */): Meme
     {
-        $memeFile = $this->memeFileRepository->find($memeFileId);
-
-        if (null === $memeFile) {
-            throw new \DomainException('Не удалось найти файл по этому id '.$memeFileId);
-        }
+        $user = $createMemeDTO->getUser();
+        $memeFile = $createMemeDTO->getMemeFile();
+        $userMemeName = $createMemeDTO->getUserMemeName();
 
         $meme = new Meme($user, $memeFile, $userMemeName);
-
-        $user->
-        $this->memeRepository->save($meme, true);
+        $user->addMeme($meme);
+        $this->entityManager->flush();
 
         return $meme;
     }

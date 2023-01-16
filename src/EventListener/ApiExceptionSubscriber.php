@@ -13,6 +13,8 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
     {
         $exception = $event->getThrowable();
 
+        //$code = match ($exception)
+
         $code = $exception instanceof \DomainException ? 400 : 500;
 
         $response = new JsonResponse([
@@ -28,4 +30,13 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
             KernelEvents::EXCEPTION => 'onKernelException',
         ];
     }
+    //
+    //private function getCode(ExceptionEvent $exception): int
+    //{
+    //    if ($exception instanceof \DomainException) {
+    //        return 400;
+    //    }
+    //
+    //    if($exception instanceof AccessEx)
+    //}
 }

@@ -3,6 +3,7 @@
 namespace App\Entity\Tag\DTO;
 
 use App\Entity\Tag\Tag;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class CreateTagDTO
@@ -23,8 +24,9 @@ class CreateTagDTO
         return $this->name;
     }
 
-    public static function fromString(array $requestContent): self
+    public static function fromRequest(Request $request): self
     {
+        $requestContent = $request->toArray();
         $name = $requestContent['name'] ?? throw new \DomainException('Не удалось получить имя тэга');
 
         return new self($name);

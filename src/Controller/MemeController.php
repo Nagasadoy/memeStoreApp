@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Meme\DTO\CreateMemeDTO;
 use App\Entity\Meme\MemeFile;
 use App\Entity\User\User;
 use App\Repository\MemeRepository;
@@ -54,17 +55,9 @@ class MemeController extends AbstractController
 
     #[isGranted('IS_AUTHENTICATED_FULLY')]
     #[Route('/create', name: 'create', methods: ['POST'])]
-    public function createMeme(Request $request, MemeService $memeService): Response
+    public function createMeme(CreateMemeDTO $createMemeDTO, MemeService $memeService): Response
     {
-        /** @var User $user */
-        $user = $this->getUser();
-
-        $content = $request->toArray();
-        $userMemeName = $content['userMemeName'];
-        $memeFileId = $content['memeFileId'];
-
-        $meme = $memeService->createMeme($user, $memeFileId, $userMemeName);
-
+        $meme = $memeService->createMeme($createMemeDTO);
         return $this->json([
             'id' => $meme->getId(),
         ]);
