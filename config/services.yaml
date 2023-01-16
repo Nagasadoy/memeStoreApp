@@ -24,6 +24,10 @@ services:
 #        tags:
 #            - { name: controller.argument_value_resolver, priority: 150 }
 
+    App\Resolver\MemeResolver:
+        tags:
+            - { name: controller.argument_value_resolver, priority: 150 }
+
     Fusonic\HttpKernelExtensions\Controller\RequestDtoResolver:
         tags:
             - { name: controller.argument_value_resolver, priority: 50 }

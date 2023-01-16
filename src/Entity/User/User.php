@@ -34,14 +34,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Meme::class, cascade: ['persist'], orphanRemoval: true)]
     private Collection $memes;
 
-//    #[ORM\OneToMany(
-//        mappedBy: 'user',
-//        targetEntity: Combination::class,
-//        cascade: ['remove', 'persist'],
-//        orphanRemoval: true)
-//    ]
-//    private $combinations;
-
     public function __construct(string $email)
     {
         $this->email = $email;
@@ -128,5 +120,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function hasMeme(Meme $meme): bool
     {
         return in_array($meme, (array) $this->memes);
+    }
+
+    public function addMeme(Meme $meme): void
+    {
+        $this->memes->add($meme);
     }
 }
