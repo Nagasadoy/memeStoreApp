@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TagRepository::class)]
 #[ORM\UniqueConstraint(
@@ -24,6 +25,10 @@ class Tag
 
     #[ORM\Column(length: 255)]
     #[Groups('tag:main')]
+    #[Assert\Length(
+        max: 10,
+        maxMessage: 'Название не может быть длиннее 10 символов'
+    )]
     private string $name;
 
     #[ORM\ManyToMany(targetEntity: Meme::class, inversedBy: 'tags')]
