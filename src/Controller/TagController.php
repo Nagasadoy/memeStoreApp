@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
+use App\Attribute\FromRequest;
 use App\Entity\Tag\DTO\CreateTagDTO;
 use App\Service\TagService;
-use Fusonic\HttpKernelExtensions\Attribute\FromRequest;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;

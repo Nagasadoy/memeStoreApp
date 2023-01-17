@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Attribute\FromRequest;
 use App\Entity\Meme\DTO\CreateMemeDTO;
 use App\Entity\Meme\Meme;
 use App\Entity\Meme\MemeFile;
@@ -67,34 +68,32 @@ class MemeController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
         $userService->removeUserMeme($user, $meme);
+
         return new Response('');
     }
 
     #[isGranted('IS_AUTHENTICATED_FULLY')]
     #[Route('/create', name: 'create', methods: ['POST'])]
     public function createMeme(
-        CreateMemeDTO $createMemeDTO,
+        #[FromRequest] CreateMemeDTO $createMemeDTO,
         MemeService $memeService,
         UploaderHelper $uploaderHelper
     ): Response {
         $meme = $memeService->createMeme($createMemeDTO);
         $meme->setFileLink($uploaderHelper->asset($meme->getMemeFile()));
 
-        return $this->json($meme, Response::HTTP_OK, [], ['groups' => ['meme:main', 'tag:main']]);
+        return $this->json($meme, Response::HTTP_OK, [], ['groups' => ['meme:create']]);
     }
 
     #[isGranted('IS_AUTHENTICATED_FULLY')]
     #[Route('/tag/add', name: 'add_tag', methods: ['POST'])]
     public function addTags(
-        AddTagDTO $addTagDTO,
+        #[FromRequest] AddTagDTO $addTagDTO,
         MemeService $memeService,
         UploaderHelper $uploaderHelper,
     ): Response {
-        $meme = $addTagDTO->getMeme();
-        $memeService->addTags($meme, $addTagDTO->getTags());
-
+        $meme = $memeService->addTags($addTagDTO);
         $meme->setFileLink($uploaderHelper->asset($meme->getMemeFile()));
-
         return $this->json($meme, Response::HTTP_OK, [], ['groups' => ['meme:main', 'tag:main']]);
     }
 }

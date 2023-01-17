@@ -6,19 +6,23 @@ use App\Entity\Meme\Meme;
 
 class AddTagDTO
 {
-    public function __construct(
-        private readonly Meme $meme,
-        private readonly array $tags
-    ) {
+    /** @var int[] */
+    private readonly array $tagIds;
+    private readonly int $memeId;
+
+    public function __construct(int $memeId, array $tagIds)
+    {
+        $this->memeId = $memeId;
+        $this->tagIds = $tagIds;
     }
 
-    public function getMeme(): Meme
+    public function getTagIds(): array
     {
-        return $this->meme;
+        return $this->tagIds;
     }
 
-    public function getTags(): array
+    public function getMemeId(): int
     {
-        return $this->tags;
+        return $this->memeId;
     }
 }

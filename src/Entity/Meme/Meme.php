@@ -23,7 +23,7 @@ class Meme
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('meme:main')]
+    #[Groups(['meme:main', 'meme:create'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'memes')]
@@ -35,14 +35,14 @@ class Meme
     private ?MemeFile $memeFile = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('meme:main')]
+    #[Groups(['meme:main', 'meme:create'])]
     private string $userMemeName;
 
     #[ORM\ManyToMany(targetEntity: Tag::class, mappedBy: 'memes')]
-    #[Groups('meme:main')]
+    #[Groups(['meme:main','meme:create'])]
     private Collection $tags;
 
-    #[Groups('meme:main')]
+    #[Groups(['meme:main', 'meme:create'])]
     private ?string $fileLink;
 
     public function __construct(User $user, MemeFile $memeFile, string $userMemeName)

@@ -20,11 +20,11 @@ class Tag
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('tag:main')]
+    #[Groups(['tag:main', 'meme:create'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('tag:main')]
+    #[Groups(['tag:main', 'meme:create'])]
     #[Assert\Length(
         max: 10,
         maxMessage: 'Название не может быть длиннее 10 символов'

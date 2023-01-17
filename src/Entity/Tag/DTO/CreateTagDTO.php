@@ -23,17 +23,4 @@ class CreateTagDTO
     {
         return $this->name;
     }
-
-    public static function fromRequest(Request $request): self
-    {
-        $requestContent = $request->toArray();
-        $name = $requestContent['name'] ?? throw new \DomainException('Не удалось получить имя тэга');
-
-        return new self($name);
-    }
-
-    public function convertToEntity(): Tag
-    {
-        return new Tag($this->name);
-    }
 }
