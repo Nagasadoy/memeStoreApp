@@ -27,7 +27,8 @@ class ResolverDTO implements ValueResolverInterface
             return [];
         }
 
-        $data = $request->toArray();
+        $data = $this->collectData($request);
+
         $className = $argument->getType();
         try {
             $dto = $this->serializer->denormalize($data, $className, JsonEncoder::FORMAT);
@@ -56,7 +57,7 @@ class ResolverDTO implements ValueResolverInterface
         return true;
     }
 
-    protected function validateEntity(mixed $object): void
+    private function validateEntity(mixed $object): void
     {
         $errors = $this->validator->validate($object);
 
@@ -67,5 +68,41 @@ class ResolverDTO implements ValueResolverInterface
             }
             throw new \DomainException('Не пройдена валидация! '.$messages);
         }
+    }
+
+    private function collectData(Request $request): array
+    {
+        $routeParameters = $this->getRouteParams($request);
+
+        $data = [];
+
+        if ('json' === $request->getContentTypeFormat()) {
+            $data = $request->toArray();
+        }
+
+        $data = array_merge($data, $request->query->all());
+
+        return $this->mergeRequestData($data, $routeParameters);
+    }
+
+    protected function mergeRequestData(array $data, array $routeParameters): array
+    {
+        if (\count($keys = array_intersect_key($data, $routeParameters)) > 0) {
+            throw new \DomainException(sprintf('Parameters (%s) used as route attributes can not be used in the request body or query parameters.', implode(', ', array_keys($keys))));
+        }
+
+        return array_merge($data, $routeParameters);
+    }
+
+    protected function getRouteParams(Request $request): array
+    {
+        $params = $request->attributes->get('_route_params', []);
+
+        foreach ($params as $key => $param) {
+            $value = filter_var($param, \FILTER_VALIDATE_INT, \FILTER_NULL_ON_FAILURE);
+            $params[$key] = $value ?? $param;
+        }
+
+        return $params;
     }
 }

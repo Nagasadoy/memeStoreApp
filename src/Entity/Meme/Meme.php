@@ -10,7 +10,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 #[ORM\Entity(repositoryClass: MemeRepository::class)]
 #[ORM\UniqueConstraint(
@@ -38,8 +37,8 @@ class Meme
     #[Groups(['meme:main', 'meme:create'])]
     private string $userMemeName;
 
-    #[ORM\ManyToMany(targetEntity: Tag::class, mappedBy: 'memes')]
-    #[Groups(['meme:main','meme:create'])]
+    #[ORM\ManyToMany(targetEntity: Tag::class, mappedBy: 'memes', fetch: 'EAGER')]
+    #[Groups(['meme:main', 'meme:create'])]
     private Collection $tags;
 
     #[Groups(['meme:main', 'meme:create'])]
@@ -55,9 +54,6 @@ class Meme
         $this->fileLink = 'gegege';
     }
 
-    /**
-     * @param string|null $fileLink
-     */
     public function setFileLink(?string $fileLink): void
     {
         $this->fileLink = $fileLink;

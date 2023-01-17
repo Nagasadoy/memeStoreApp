@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Attribute\FromRequest;
 use App\Entity\Tag\DTO\CreateTagDTO;
+use App\Entity\Tag\DTO\EditTagDTO;
 use App\Service\TagService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,6 +18,18 @@ class TagController extends AbstractController
     {
         $tag = $tagService->create($createTagDTO->getName());
 
+        return $this->json(
+            $tag,
+            Response::HTTP_OK,
+            [],
+            ['groups' => ['tag:main']]
+        );
+    }
+
+    #[Route('/{id}/edit', name: 'edit')]
+    public function edit(#[FromRequest] EditTagDTO $editTagDTO, TagService $tagService): Response
+    {
+        $tag = $tagService->edit($editTagDTO);
         return $this->json(
             $tag,
             Response::HTTP_OK,

@@ -3,14 +3,20 @@
 namespace App\Controller;
 
 use App\Entity\User\User;
+use App\Normalizer\MemeNormalizer;
+use App\Normalizer\Tag2Normalizer;
+use App\Normalizer\TagNormalizer;
 use App\Repository\UserRepository;
 use App\Service\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 #[Route('api/user', name: 'api_user_')]
@@ -61,11 +67,12 @@ class UserController extends AbstractController
             $meme->setFileLink($link);
         }
 
+
         return $this->json(
             ['memes' => $memes],
             Response::HTTP_OK,
             [],
-            ['groups' => ['meme:main', 'tag:main']]
+            ['groups' => ['meme:main', 'tag:only']]
         );
     }
 
