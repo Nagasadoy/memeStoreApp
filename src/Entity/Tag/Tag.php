@@ -24,7 +24,7 @@ class Tag
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['tag:main', 'meme:create','tag:only'])]
+    #[Groups(['tag:main', 'meme:create', 'tag:only'])]
     #[Assert\Length(
         max: 10,
         maxMessage: 'Название не может быть длиннее 10 символов'

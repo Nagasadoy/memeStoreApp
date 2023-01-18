@@ -71,18 +71,16 @@ class ResolverDTO implements ValueResolverInterface
     {
         $routeParameters = $this->getRouteParams($request);
 
-        $data = [];
-
         if ('json' === $request->getContentTypeFormat()) {
             $data = $request->toArray();
+        } else {
+            $data = $this->convertStringToInt($request->query->all());
         }
-
-        $data = array_merge($data, $request->query->all());
 
         return $this->mergeRequestData($data, $routeParameters);
     }
 
-    protected function mergeRequestData(array $data, array $routeParameters): array
+    private function mergeRequestData(array $data, array $routeParameters): array
     {
         if (\count($keys = array_intersect_key($data, $routeParameters)) > 0) {
             throw new \DomainException(sprintf('Parameters (%s) used as route attributes can not be used in the request body or query parameters.', implode(', ', array_keys($keys))));
@@ -91,15 +89,19 @@ class ResolverDTO implements ValueResolverInterface
         return array_merge($data, $routeParameters);
     }
 
-    protected function getRouteParams(Request $request): array
+    private function getRouteParams(Request $request): array
     {
         $params = $request->attributes->get('_route_params', []);
+        return $this->convertStringToInt($params);
+    }
 
-        foreach ($params as $key => $param) {
+    private function convertStringToInt(array $data): array
+    {
+        foreach ($data as $key => $param) {
             $value = filter_var($param, \FILTER_VALIDATE_INT, \FILTER_NULL_ON_FAILURE);
-            $params[$key] = $value ?? $param;
+            $data[$key] = $value ?? $param;
         }
 
-        return $params;
+        return $data;
     }
 }

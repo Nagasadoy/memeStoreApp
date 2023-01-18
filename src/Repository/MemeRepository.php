@@ -2,7 +2,9 @@
 
 namespace App\Repository;
 
+use App\DTO\FilterMemeByTagDTO;
 use App\Entity\Meme\Meme;
+use App\Entity\User\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -39,4 +41,18 @@ class MemeRepository extends ServiceEntityRepository
         }
     }
 
+    public function getUserMemes(User $user, FilterMemeByTagDTO $filter)
+    {
+        $qb = $this->createQueryBuilder('m')
+            ->leftJoin('m.tags', 't')
+            ->andWhere('m.user = :user')
+            ->setParameter(':user', $user);
+
+        if (null !== $filter->getTagName()) {
+            $qb->andWhere('t.name = :tagName')
+                ->setParameter('tagName', $filter->getTagName());
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 }

@@ -14,13 +14,13 @@ class CreateTagDTO
     )]
     private string $name;
 
-    // #[Assert\Positive(message: 'Значение score должно быть положительным')]
-    // private int $score;
+    #[Assert\Positive(message: 'Значение score должно быть положительным')]
+    private int $score;
 
-    public function __construct(string $name/* , int $score */)
+    public function __construct(string $name, int $score)
     {
         $this->name = $name;
-        // $this->score = $score;
+        $this->score = $score;
     }
 
     public function getName(): string

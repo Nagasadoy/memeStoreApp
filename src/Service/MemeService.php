@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\DTO\FilterMemeByTagDTO;
 use App\Entity\Meme\DTO\CreateMemeDTO;
 use App\Entity\Meme\Meme;
 use App\Entity\Tag\DTO\AddTagDTO;
@@ -81,5 +82,10 @@ class MemeService
         $this->memeRepository->save($meme, true);
 
         return $meme;
+    }
+
+    public function getUserMemes(User $user, FilterMemeByTagDTO $filter)
+    {
+        return $this->memeRepository->getUserMemes($user, $filter);
     }
 }
