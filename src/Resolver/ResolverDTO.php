@@ -3,6 +3,7 @@
 namespace App\Resolver;
 
 use App\Attribute\FromRequest;
+use App\Exception\ValidationException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
@@ -62,11 +63,7 @@ class ResolverDTO implements ValueResolverInterface
         $errors = $this->validator->validate($object);
 
         if (count($errors) > 0) {
-            $messages = '';
-            foreach ($errors as $error) {
-                $messages .= $error->getMessage().' ';
-            }
-            throw new \DomainException('Не пройдена валидация! '.$messages);
+            throw new ValidationException($errors, 'Не пройдена валидация!');
         }
     }
 

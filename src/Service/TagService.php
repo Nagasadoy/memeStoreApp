@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Tag\DTO\EditTagDTO;
 use App\Entity\Tag\Tag;
 use App\Repository\TagRepository;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 
 class TagService
 {
@@ -22,8 +23,6 @@ class TagService
 
     public function edit(EditTagDTO $editTagDTO): Tag
     {
-
-        $id = $editTagDTO->getId();
         $tag = $this->tagRepository->find($editTagDTO->getId());
 
         if (null === $tag) {

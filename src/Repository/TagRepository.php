@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Tag\Tag;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -26,7 +27,11 @@ class TagRepository extends ServiceEntityRepository
         $this->getEntityManager()->persist($entity);
 
         if ($flush) {
-            $this->getEntityManager()->flush();
+            try {
+                $this->getEntityManager()->flush();
+            } catch (UniqueConstraintViolationException) {
+                throw new \DomainException("Тэг с таким именем уже существует!");
+            }
         }
     }
 

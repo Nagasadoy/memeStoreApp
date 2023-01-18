@@ -2,6 +2,7 @@
 
 namespace App\EventListener;
 
+use App\Exception\ValidationException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
@@ -13,14 +14,23 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
     {
         $exception = $event->getThrowable();
 
-        //$code = match ($exception)
-
         $code = $exception instanceof \DomainException ? 400 : 500;
 
-        $response = new JsonResponse([
-            'message' => $exception->getMessage(),
-        ], $code);
+        $message = $exception->getMessage();
 
+        $data['message'] = $message;
+
+        if ($exception instanceof ValidationException) {
+            $errors = [];
+
+            foreach ($exception->getErrors() as $error) {
+                $errors[] = $error->getMessage();
+            }
+
+            $data['errors'] = $errors;
+        }
+
+        $response = new JsonResponse($data, $code);
         $event->setResponse($response);
     }
 
@@ -30,13 +40,4 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
             KernelEvents::EXCEPTION => 'onKernelException',
         ];
     }
-    //
-    //private function getCode(ExceptionEvent $exception): int
-    //{
-    //    if ($exception instanceof \DomainException) {
-    //        return 400;
-    //    }
-    //
-    //    if($exception instanceof AccessEx)
-    //}
 }
