@@ -2,8 +2,12 @@
 
 namespace App\Controller;
 
-use App\Message\Message;
+use App\Message\ImportFromFileMessage;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -11,10 +15,16 @@ use Symfony\Component\Routing\Annotation\Route;
 class MessengerController extends AbstractController
 {
     #[Route('/send', name: 'send', methods: ['POST'])]
-    public function sendMessage(MessageBusInterface $bus)
+    public function sendMessage(MessageBusInterface $bus, Request $request): Response
     {
-        $message = new Message('строка, которую мы прочитали из файла');
-        $bus->dispatch($message);
-        return $this->json(['ok' => 'ok']);
+        /** @var UploadedFile $file */
+        $file = $request->files->get('csv');
+        $projectDir = $this->getParameter('app.project_dir');
+        $file = $file->move($projectDir.'/public', $file->getFilename());
+
+        $importFromFileMessage = new ImportFromFileMessage($projectDir.'/public/'.$file->getFilename());
+        $bus->dispatch($importFromFileMessage);
+
+        return $this->json(['message' => 'Сообщение импорта файла отправлено в очередь']);
     }
 }

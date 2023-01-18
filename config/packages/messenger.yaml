@@ -20,7 +20,8 @@ framework:
 
         routing:
             # Route your messages to the transports
-             'App\Message\Message': async
+             'App\Message\CreateOrEditTagMessage': async
+             'App\Message\ImportFromFileMessage': async
 
 # when@test:
 #    framework:
