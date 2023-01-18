@@ -53,6 +53,12 @@ class MemeRepository extends ServiceEntityRepository
                 ->setParameter('tagName', $filter->getTagName());
         }
 
+        if (null !== $filter->getScore()) {
+            $qb->andWhere('t.id = :id')
+                ->setParameter('id', $filter->getScore());
+        }
+
+
         return $qb->getQuery()->getResult();
     }
 }

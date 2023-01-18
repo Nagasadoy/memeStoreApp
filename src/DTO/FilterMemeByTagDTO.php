@@ -18,4 +18,11 @@ class FilterMemeByTagDTO
     {
         return $this->tagName;
     }
+
+    public function getScore(): ?int
+    {
+        return $this->score;
+    }
+
+
 }
