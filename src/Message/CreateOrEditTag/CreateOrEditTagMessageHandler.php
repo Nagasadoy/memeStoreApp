@@ -5,11 +5,14 @@ namespace App\Message\CreateOrEditTag;
 use App\Entity\Tag\DTO\EditTagDTO;
 use App\Service\TagService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 
 #[AsMessageHandler]
 class CreateOrEditTagMessageHandler
 {
-    public function __construct(private readonly TagService $tagService)
+    public function __construct(private readonly TagService $tagService, private readonly DenormalizerInterface $denormalizer)
     {
     }
 
@@ -21,7 +24,8 @@ class CreateOrEditTagMessageHandler
         if (null === $id) {
             $this->tagService->create($name);
         } else {
-            $this->tagService->edit(new EditTagDTO($name, $id));
+            $dto = $this->denormalizer->denormalize(['id' => $id, 'name' => $name], EditTagDTO::class);
+            $this->tagService->edit($dto);
         }
     }
 }
