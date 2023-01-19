@@ -2,9 +2,8 @@
 
 namespace App\Controller;
 
-use App\Message\ImportFromFileMessage;
+use App\Message\ImportFromFile\ImportFromFileMessage;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Message;
+namespace App\Message\ImportFromFile;
 
+use App\Message\CreateOrEditTag\CreateOrEditTagMessage;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 
@@ -33,5 +34,7 @@ class ImportFromFileMessageHandler
             }
             fclose($handle);
         }
+
+        unlink($filePath);
     }
 }

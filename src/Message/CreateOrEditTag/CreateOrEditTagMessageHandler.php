@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Message;
+namespace App\Message\CreateOrEditTag;
 
 use App\Entity\Tag\DTO\EditTagDTO;
 use App\Service\TagService;
