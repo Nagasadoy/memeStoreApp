@@ -1,8 +1,6 @@
 <?php
 
-namespace App\Message;
-
-use Symfony\Component\Messenger\MessageBusInterface;
+namespace App\Message\ImportFromFile;
 
 class ImportFromFileMessage
 {
