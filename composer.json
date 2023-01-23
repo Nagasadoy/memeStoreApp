@@ -6,6 +6,7 @@
     "require": {
         "php": ">=8.1",
         "ext-ctype": "*",
+        "ext-curl": "*",
         "ext-iconv": "*",
         "doctrine/annotations": "^1.0",
         "doctrine/doctrine-bundle": "^2.7",
@@ -13,6 +14,7 @@
         "doctrine/orm": "^2.14",
         "fusonic/http-kernel-extensions": "^5.3",
         "gesdinet/jwt-refresh-token-bundle": "^1.1",
+        "google/apiclient": "^2.13",
         "lexik/jwt-authentication-bundle": "^2.16",
         "phpdocumentor/reflection-docblock": "^5.3",
         "phpstan/phpdoc-parser": "^1.15",
@@ -23,6 +25,7 @@
         "symfony/dotenv": "6.2.*",
         "symfony/flex": "^2",
         "symfony/framework-bundle": "6.2.*",
+        "symfony/http-client": "6.2.*",
         "symfony/messenger": "6.2.*",
         "symfony/property-access": "6.2.*",
         "symfony/property-info": "6.2.*",

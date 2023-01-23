@@ -3,15 +3,13 @@
 namespace App\Controller;
 
 use App\Message\ImportFromFile\ImportFromFileMessage;
+use App\Service\FCM;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\Encoder\CsvEncoder;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/api/message', name: 'message_')]
 class MessengerController extends AbstractController
@@ -28,5 +26,12 @@ class MessengerController extends AbstractController
         $bus->dispatch($importFromFileMessage);
 
         return $this->json(['message' => 'Сообщение импорта файла отправлено в очередь']);
+    }
+
+    #[Route('/send-push-notification', name: 'send_notification')]
+    public function sendPushNotification(FCM $FCM): Response
+    {
+        $FCM->send();
+        return new Response();
     }
 }
