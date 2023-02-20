@@ -14,7 +14,7 @@
         "fusonic/http-kernel-extensions": "^5.3",
         "gesdinet/jwt-refresh-token-bundle": "^1.1",
         "lexik/jwt-authentication-bundle": "^2.16",
-        "nelmio/cors-bundle": "^2.2",
+        "nelmio/cors-bundle": "^2.3",
         "phpdocumentor/reflection-docblock": "^5.3",
         "phpstan/phpdoc-parser": "^1.15",
         "ramsey/uuid": "^4.7",

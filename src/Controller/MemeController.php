@@ -8,6 +8,7 @@ use App\Entity\Meme\Meme;
 use App\Entity\Meme\MemeFile;
 use App\Entity\Tag\DTO\AddTagDTO;
 use App\Entity\User\User;
+use App\Repository\MemeFileRepository;
 use App\Service\MemeService;
 use App\Service\UserService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -18,6 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Vich\UploaderBundle\Storage\StorageInterface;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 #[Route('/api/meme', name: 'meme_')]
@@ -95,5 +97,15 @@ class MemeController extends AbstractController
         $meme = $memeService->addTags($addTagDTO);
         $meme->setFileLink($uploaderHelper->asset($meme->getMemeFile()));
         return $this->json($meme, Response::HTTP_OK, [], ['groups' => ['meme:main', 'tag:main']]);
+    }
+
+    #[Route('/image/{id}', name: 'image', methods: ['GET'])]
+    public function getImageById(int $id, Request $request, StorageInterface $storage, MemeFileRepository $memeFileRepository)
+    {
+        $meme = $memeFileRepository->findOneBy(['id' => $id]);
+
+        $url = $request->getUriForPath($storage->resolveUri($meme, 'file'));
+
+        return $this->json(['url' => $url]);
     }
 }
