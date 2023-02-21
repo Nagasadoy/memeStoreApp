@@ -9,14 +9,17 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: MemeRepository::class)]
 #[ORM\UniqueConstraint(
     name: 'user_meme_unique',
-    columns: ['user_id', 'meme_file_id', 'user_meme_name']
+    columns: ['user_id', 'user_meme_name']
 )]
-#[UniqueEntity(['user', 'memeFile', 'userMemeName'])]
+#[UniqueEntity(['user', 'userMemeName'])]
+#[Vich\Uploadable]
 class Meme
 {
     #[ORM\Id]
@@ -29,9 +32,14 @@ class Meme
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-    #[ORM\ManyToOne(inversedBy: 'memes')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?MemeFile $memeFile = null;
+    #[ORM\Column(length: 255)]
+    private ?string $fileName = null;
+
+    #[Vich\UploadableField(mapping: 'memes', fileNameProperty: 'fileName')]
+    private File $file;
+
+    #[ORM\Column(type: 'datetime_immutable')]
+    private \DateTimeImmutable $updatedAt;
 
     #[ORM\Column(length: 255)]
     #[Groups(['meme:main', 'meme:create'])]
@@ -41,27 +49,19 @@ class Meme
     #[Groups(['meme:main', 'meme:create'])]
     private Collection $tags;
 
-    #[Groups(['meme:main', 'meme:create'])]
-    private ?string $fileLink;
+    #[ORM\Column(length: 255)]
+    private ?string $commonName = null;
 
-    public function __construct(User $user, MemeFile $memeFile, string $userMemeName)
+    private string $fileLink;
+
+    public function __construct(User $user, string $commonName, string $userMemeName)
     {
         $this->user = $user;
-        $this->memeFile = $memeFile;
+        $this->commonName = $commonName;
         $this->userMemeName = $userMemeName;
         $this->tags = new ArrayCollection();
 
-        $this->fileLink = 'gegege';
-    }
-
-    public function setFileLink(?string $fileLink): void
-    {
-        $this->fileLink = $fileLink;
-    }
-
-    public function getFileLink(): ?string
-    {
-        return $this->fileLink;
+        $this->updatedAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -74,11 +74,9 @@ class Meme
         return $this->user;
     }
 
-    public function setUser(?User $user): self
+    public function setUser(User $user): void
     {
         $this->user = $user;
-
-        return $this;
     }
 
     /**
@@ -95,13 +93,7 @@ class Meme
             $this->tags->add($tag);
             $tag->addMeme($this);
         }
-
         return $this;
-    }
-
-    public function getMemeFile(): ?MemeFile
-    {
-        return $this->memeFile;
     }
 
     public function removeTag(Tag $tag): self
@@ -117,4 +109,44 @@ class Meme
     {
         return $this->userMemeName;
     }
+
+    public function getCommonName(): ?string
+    {
+        return $this->commonName;
+    }
+
+    public function getFile(): File
+    {
+        return $this->file;
+    }
+
+    public function setFile(?File $file = null): void
+    {
+        $this->file = $file;
+
+        if ($file) {
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
+
+    public function getFileName(): ?string
+    {
+        return $this->fileName;
+    }
+
+    public function setFileName(?string $fileName): self
+    {
+        $this->fileName = $fileName;
+        return $this;
+    }
+//
+//    public function getFileLink(): string
+//    {
+//        return $this->fileLink;
+//    }
+//
+//    public function setFileLink(string $fileLink): void
+//    {
+//        $this->fileLink = $fileLink;
+//    }
 }

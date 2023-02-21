@@ -23,7 +23,7 @@ class MemeNormalizer implements NormalizerInterface, NormalizerAwareInterface
         return [
             'id' => $object->getId(),
             'userMemeName' => $object->getUserMemeName(),
-            'fileLink' => $this->uploaderHelper->asset($object->getMemeFile()),
+            'fileLink' => $this->uploaderHelper->asset($object->getFile()),
             'tags' => $this->normalizer->normalize($object->getTags(), null, $context)
         ];
     }

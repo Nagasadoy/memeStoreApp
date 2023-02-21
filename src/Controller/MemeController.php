@@ -21,46 +21,30 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Vich\UploaderBundle\Storage\StorageInterface;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[Route('/api/meme', name: 'meme_')]
 class MemeController extends AbstractController
 {
-    #[Route('/file/create', name: 'file_create', methods: ['POST'])]
-    public function createFileMeme(
-        Request $request,
-        MemeService $memeService,
-        EntityManagerInterface $entityManager
-    ): Response {
-        /** @var File $file */
-        $file = $request->files->get('file');
-
-        $memeFile = new MemeFile($file->getFilename());
-        $memeFile->setFile($file);
-
-        $entityManager->persist($memeFile);
-        $entityManager->flush();
-
-        return $this->json([
-            'id' => $memeFile->getId(),
-        ]);
-    }
-
-    #[Route('/file/delete/{id}', name: 'file_delete', methods: ['POST'])]
-    #[ParamConverter('memeFile', MemeFile::class)]
-    public function removeFile(MemeFile $memeFile, EntityManagerInterface $entityManager)
-    {
-        // По сути дела этот маршрут вообще не нужен, был добавлен, чтобы протестировать vich uploader
-        // (что удаляются по-настоящему файлы, при удалении из БД)
-
-        $entityManager->remove($memeFile);
-        $removedId = $memeFile->getId();
-        $entityManager->flush();
-
-        return $this->json([
-            'id' => $removedId,
-            'message' => ' Removed successfully',
-        ]);
-    }
+//    #[Route('/file/create', name: 'file_create', methods: ['POST'])]
+//    public function createFileMeme(
+//        Request $request,
+//        MemeService $memeService,
+//        EntityManagerInterface $entityManager
+//    ): Response {
+//        /** @var File $file */
+//        $file = $request->files->get('file');
+//
+//        $memeFile = new MemeFile($file->getFilename());
+//        $memeFile->setFile($file);
+//
+//        $entityManager->persist($memeFile);
+//        $entityManager->flush();
+//
+//        return $this->json([
+//            'id' => $memeFile->getId(),
+//        ]);
+//    }
 
     #[isGranted('IS_AUTHENTICATED_FULLY')]
     #[Route('/remove/{id}', name: 'remove', methods: ['DELETE'])]
@@ -77,12 +61,15 @@ class MemeController extends AbstractController
     #[isGranted('IS_AUTHENTICATED_FULLY')]
     #[Route('/create', name: 'create', methods: ['POST'])]
     public function createMeme(
-        #[FromRequest] CreateMemeDTO $createMemeDTO,
+/*        #[FromRequest] CreateMemeDTO $createMemeDTO,*/
         MemeService $memeService,
-        UploaderHelper $uploaderHelper
+        UploaderHelper $uploaderHelper,
+        Request $request
     ): Response {
-        $meme = $memeService->createMeme($createMemeDTO);
-        $meme->setFileLink($uploaderHelper->asset($meme->getMemeFile()));
+        $file = $request->files->get('file');
+        $userMemeName = $request->request->get('userMemeName');
+        $meme = $memeService->createMeme($file, $userMemeName);
+//        $meme->setFileLink($uploaderHelper->asset($meme->getMemeFile()));
 
         return $this->json($meme, Response::HTTP_OK, [], ['groups' => ['meme:create']]);
     }
@@ -95,7 +82,7 @@ class MemeController extends AbstractController
         UploaderHelper $uploaderHelper,
     ): Response {
         $meme = $memeService->addTags($addTagDTO);
-        $meme->setFileLink($uploaderHelper->asset($meme->getMemeFile()));
+//        $meme->setFileLink($uploaderHelper->asset($meme->getFile()));
         return $this->json($meme, Response::HTTP_OK, [], ['groups' => ['meme:main', 'tag:main']]);
     }
 
@@ -103,9 +90,7 @@ class MemeController extends AbstractController
     public function getImageById(int $id, Request $request, StorageInterface $storage, MemeFileRepository $memeFileRepository)
     {
         $meme = $memeFileRepository->findOneBy(['id' => $id]);
-
         $url = $request->getUriForPath($storage->resolveUri($meme, 'file'));
-
         return $this->json(['url' => $url]);
     }
 }

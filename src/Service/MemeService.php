@@ -3,48 +3,41 @@
 namespace App\Service;
 
 use App\DTO\FilterMemeByTagDTO;
-use App\Entity\Meme\DTO\CreateMemeDTO;
 use App\Entity\Meme\Meme;
 use App\Entity\Tag\DTO\AddTagDTO;
 use App\Entity\User\User;
-use App\Repository\MemeFileRepository;
 use App\Repository\MemeRepository;
 use App\Repository\TagRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class MemeService
 {
     public function __construct(
         private readonly MemeRepository $memeRepository,
-        private readonly MemeFileRepository $memeFileRepository,
         private readonly TagRepository $tagRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly Security $security,
     ) {
     }
 
-    public function createMeme(CreateMemeDTO $createMemeDTO): Meme
+    public function createMeme(UploadedFile $file, string $userMemeName): Meme
     {
         /** @var User $user */
         $user = $this->security->getUser();
 
         if (null === $user) {
-            throw new \DomainException('Это действие недоступно неавторизованным пользователям!');
+            throw new DomainException('Это действие недоступно неавторизованным пользователям!');
         }
 
-        $memeFileId = $createMemeDTO->getMemeFileId();
-        $memeFile = $this->memeFileRepository->find($memeFileId);
+        $commonName = $file->getFilename();
 
-        if (null === $memeFile) {
-            throw new \DomainException('Не удалось найти файл по указанному id='.$memeFileId);
-        }
-        $userMemeName = $createMemeDTO->getUserMemeName();
-
-        $meme = new Meme($user, $memeFile, $userMemeName);
+        $meme = new Meme($user, $commonName, $userMemeName);
+        $meme->setFile($file);
         $user->addMeme($meme);
         $this->entityManager->flush();
-
         return $meme;
     }
 
