@@ -71,7 +71,12 @@ class MemeController extends AbstractController
         $meme = $memeService->createMeme($file, $userMemeName);
 //        $meme->setFileLink($uploaderHelper->asset($meme->getMemeFile()));
 
-        return $this->json($meme, Response::HTTP_OK, [], ['groups' => ['meme:create']]);
+        $file = $meme->getFile();
+
+        return $this->json([
+            'id' => $meme->getId(),
+            'name' => $meme->getUserMemeName(),
+        ]);
     }
 
     #[isGranted('IS_AUTHENTICATED_FULLY')]
