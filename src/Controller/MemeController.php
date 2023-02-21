@@ -58,12 +58,12 @@ class MemeController extends AbstractController
         return new Response('');
     }
 
-    #[isGranted('IS_AUTHENTICATED_FULLY')]
+//    #[isGranted('IS_AUTHENTICATED_FULLY')]
     #[Route('/create', name: 'create', methods: ['POST'])]
     public function createMeme(
 /*        #[FromRequest] CreateMemeDTO $createMemeDTO,*/
         MemeService $memeService,
-        UploaderHelper $uploaderHelper,
+        StorageInterface $storage,
         Request $request
     ): Response {
         $file = $request->files->get('file');
@@ -71,11 +71,12 @@ class MemeController extends AbstractController
         $meme = $memeService->createMeme($file, $userMemeName);
 //        $meme->setFileLink($uploaderHelper->asset($meme->getMemeFile()));
 
-        $file = $meme->getFile();
+        $url = $request->getUriForPath($storage->resolveUri($meme, 'file'));
 
         return $this->json([
             'id' => $meme->getId(),
             'name' => $meme->getUserMemeName(),
+            'url' => $url
         ]);
     }
 
@@ -89,13 +90,5 @@ class MemeController extends AbstractController
         $meme = $memeService->addTags($addTagDTO);
 //        $meme->setFileLink($uploaderHelper->asset($meme->getFile()));
         return $this->json($meme, Response::HTTP_OK, [], ['groups' => ['meme:main', 'tag:main']]);
-    }
-
-    #[Route('/image/{id}', name: 'image', methods: ['GET'])]
-    public function getImageById(int $id, Request $request, StorageInterface $storage, MemeFileRepository $memeFileRepository)
-    {
-        $meme = $memeFileRepository->findOneBy(['id' => $id]);
-        $url = $request->getUriForPath($storage->resolveUri($meme, 'file'));
-        return $this->json(['url' => $url]);
     }
 }

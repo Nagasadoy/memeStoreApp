@@ -36,7 +36,7 @@ class Meme
     private ?string $fileName = null;
 
     #[Vich\UploadableField(mapping: 'memes', fileNameProperty: 'fileName')]
-    private File $file;
+    private ?File $file = null;
 
     #[ORM\Column(type: 'datetime_immutable')]
     private \DateTimeImmutable $updatedAt;
@@ -115,7 +115,7 @@ class Meme
         return $this->commonName;
     }
 
-    public function getFile(): File
+    public function getFile(): ?File
     {
         return $this->file;
     }
