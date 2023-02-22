@@ -68,8 +68,9 @@ class MemeController extends AbstractController
     ): Response {
         $file = $request->files->get('file');
         $userMemeName = $request->request->get('userMemeName');
-        $meme = $memeService->createMeme($file, $userMemeName);
-//        $meme->setFileLink($uploaderHelper->asset($meme->getMemeFile()));
+        $tagIds = explode(',', $request->request->get('tagIds'));
+
+        $meme = $memeService->createMeme($file, $userMemeName, $tagIds);
 
         $url = $request->getUriForPath($storage->resolveUri($meme, 'file'));
 

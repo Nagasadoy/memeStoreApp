@@ -23,7 +23,7 @@ class MemeService
     ) {
     }
 
-    public function createMeme(UploadedFile $file, string $userMemeName): Meme
+    public function createMeme(UploadedFile $file, string $userMemeName, array $tagIds): Meme
     {
         /** @var User $user */
         $user = $this->security->getUser();
@@ -32,11 +32,18 @@ class MemeService
             throw new DomainException('Это действие недоступно неавторизованным пользователям!');
         }
 
+        $tags = $this->tagRepository->findByArrayIds($tagIds);
+
         $commonName = $file->getFilename();
 
         $meme = new Meme($user, $commonName, $userMemeName);
         $meme->setFile($file);
         $user->addMeme($meme);
+
+        foreach ($tags as $tag) {
+            $meme->addTag($tag);
+        }
+
         $this->entityManager->flush();
         return $meme;
     }

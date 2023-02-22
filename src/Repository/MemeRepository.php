@@ -46,7 +46,8 @@ class MemeRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('m')
             ->leftJoin('m.tags', 't')
             ->andWhere('m.user = :user')
-            ->setParameter(':user', $user);
+            ->setParameter(':user', $user)
+            ->orderBy('m.updatedAt', 'DESC');
 
         if (null !== $filter->getTagName()) {
             $qb->andWhere('t.name = :tagName')
