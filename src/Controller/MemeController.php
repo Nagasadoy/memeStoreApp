@@ -56,14 +56,13 @@ class MemeController extends AbstractController
     #[isGranted('IS_AUTHENTICATED_FULLY')]
     #[Route('/create', name: 'create', methods: ['POST'])]
     public function createMeme(
-/*        #[FromRequest] CreateMemeDTO $createMemeDTO,*/
         MemeService $memeService,
         StorageInterface $storage,
         Request $request
     ): Response {
         $file = $request->files->get('file');
         $userMemeName = $request->request->get('userMemeName');
-        $tagIds = explode(',', $request->request->get('tagIds'));
+        $tagIds = json_decode($request->request->get('tagIds'));
 
         $meme = $memeService->createMeme($file, $userMemeName, $tagIds);
 

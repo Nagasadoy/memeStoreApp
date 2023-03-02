@@ -32,6 +32,11 @@ class MemeService
             throw new DomainException('Это действие недоступно неавторизованным пользователям!');
         }
 
+        $meme = $this->memeRepository->findMemeByNameAndUser($userMemeName, $user);
+        if ($meme !== null) {
+            throw new DomainException('Мем с таким именем уже существует!');
+        }
+
         $tags = $this->tagRepository->findByArrayIds($tagIds);
 
         $commonName = $file->getFilename();

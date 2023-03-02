@@ -62,4 +62,15 @@ class MemeRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    public function findMemeByNameAndUser(string $name, User $user): ?Meme
+    {
+        return $this->createQueryBuilder('m')
+            ->andWhere('m.userMemeName = :name')
+            ->andWhere('m.user = :user')
+            ->setParameter('name', $name)
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }
