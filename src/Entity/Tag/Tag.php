@@ -3,6 +3,7 @@
 namespace App\Entity\Tag;
 
 use App\Entity\Meme\Meme;
+use App\Entity\User\User;
 use App\Repository\TagRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -26,23 +27,33 @@ class Tag
     #[ORM\Column(length: 255)]
     #[Groups(['tag:main', 'meme:create', 'tag:only'])]
     #[Assert\Length(
-        max: 10,
-        maxMessage: 'Название не может быть длиннее 10 символов'
+        max: 50,
+        maxMessage: 'Название не может быть длиннее 50 символов'
     )]
     private string $name;
+
+    #[ORM\ManyToOne]
+    private User $user;
+
 
     #[ORM\ManyToMany(targetEntity: Meme::class, inversedBy: 'tags')]
     private Collection $memes;
 
-    public function __construct(string $name)
+    public function __construct(string $name, User $user)
     {
         $this->name = $name;
+        $this->user = $user;
         $this->memes = new ArrayCollection();
     }
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getUser(): User
+    {
+        return $this->user;
     }
 
     public function getName(): string

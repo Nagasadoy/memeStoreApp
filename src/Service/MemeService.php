@@ -12,6 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use DomainException;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class MemeService
 {
@@ -29,7 +30,7 @@ class MemeService
         $user = $this->security->getUser();
 
         if (null === $user) {
-            throw new DomainException('Это действие недоступно неавторизованным пользователям!');
+            throw new UnauthorizedHttpException('Это действие недоступно неавторизованным пользователям!');
         }
 
         $meme = $this->memeRepository->findMemeByNameAndUser($userMemeName, $user);

@@ -4,18 +4,20 @@ namespace App\Service;
 
 use App\Entity\Tag\DTO\EditTagDTO;
 use App\Entity\Tag\Tag;
+use App\Entity\User\User;
 use App\Repository\TagRepository;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 
 class TagService
 {
+
     public function __construct(private readonly TagRepository $tagRepository)
     {
     }
 
-    public function create(string $name): Tag
+    public function create(string $name, User $user): Tag
     {
-        $tag = new Tag($name);
+        $tag = new Tag($name, $user);
         $this->tagRepository->save($tag, true);
 
         return $tag;

@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Tag\Tag;
+use App\Entity\User\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\Persistence\ManagerRegistry;
@@ -53,6 +54,15 @@ class TagRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('t')
             ->where('t.id IN (:ids)')
             ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findAllByUser(User $user): array
+    {
+        return $this->createQueryBuilder('t')
+            ->where('t.user = :user')
+            ->setParameter('user', $user)
             ->getQuery()
             ->getResult();
     }
