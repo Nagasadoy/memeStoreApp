@@ -4,7 +4,9 @@ namespace App\Message\ImportFromFile;
 
 use App\Message\CreateOrEditTag\CreateOrEditTagMessage;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\DelayStamp;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -15,7 +17,8 @@ class ImportFromFileMessageHandler
     public function __construct(
         private readonly MessageBusInterface $bus,
         private readonly SerializerInterface $serializer
-    ) {
+    )
+    {
     }
 
     public function __invoke(ImportFromFileMessage $message): void
@@ -29,7 +32,6 @@ class ImportFromFileMessageHandler
         $result = [];
         if (($handle = fopen($filePath, 'r')) !== false) {
             while (($data = fgetcsv($handle, 1000, ';')) !== false) {
-                sleep(5);
 
                 if (count($headers) == 0) {
                     for ($i = 0; $i < count($data); ++$i) {
@@ -45,11 +47,14 @@ class ImportFromFileMessageHandler
                     if ('' === $data[0]) {
                         $id = null;
                     } else {
-                        $id = (int) $data[0];
+                        $id = (int)$data[0];
                     }
                     $name = $data[1];
                     $message = new CreateOrEditTagMessage($name, $id);
-                    $this->bus->dispatch($message);
+                    $envelope = new Envelope($message, [
+                        new DelayStamp(5000)
+                    ]);
+                    $this->bus->dispatch($envelope);
 
                 }
             }
