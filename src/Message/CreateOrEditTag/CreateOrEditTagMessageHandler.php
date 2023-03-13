@@ -12,9 +12,10 @@ use Symfony\Component\Serializer\SerializerInterface;
 #[AsMessageHandler]
 class CreateOrEditTagMessageHandler
 {
-    public function __construct(private readonly TagService $tagService, private readonly DenormalizerInterface $denormalizer)
-    {
-    }
+    public function __construct(
+        private readonly TagService $tagService,
+        private readonly DenormalizerInterface $denormalizer
+    ) {}
 
     public function __invoke(CreateOrEditTagMessage $message)
     {

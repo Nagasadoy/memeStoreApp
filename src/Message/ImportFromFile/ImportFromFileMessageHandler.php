@@ -28,6 +28,7 @@ class ImportFromFileMessageHandler
 
     private function parseFile(string $filePath): void
     {
+
         $headers = [];
         $result = [];
         if (($handle = fopen($filePath, 'r')) !== false) {
